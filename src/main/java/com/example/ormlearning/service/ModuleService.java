@@ -35,6 +35,15 @@ public class ModuleService {
     public List<Module> getByCourse(Long courseId) {
         return moduleRepository.findByCourseIdOrderByOrderIndexAsc(courseId);
     }
+    @Transactional
+    public Module update(Long id, Module updated) {
+        Module existing = getById(id);
+        existing.setTitle(updated.getTitle());
+        existing.setDescription(updated.getDescription());
+        existing.setOrderIndex(updated.getOrderIndex());
+        return existing;
+    }
+
 
     @Transactional
     public void delete(Long id) {

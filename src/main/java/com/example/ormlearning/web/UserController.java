@@ -7,6 +7,8 @@ import com.example.ormlearning.entity.Profile;
 import com.example.ormlearning.entity.Role;
 import com.example.ormlearning.entity.User;
 import com.example.ormlearning.service.UserService;
+import com.example.ormlearning.dto.EnrollmentResponse;
+import com.example.ormlearning.service.EnrollmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,6 +26,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final EnrollmentService enrollmentService;
 
     @PostMapping
     @Operation(summary = "Create a user")
@@ -62,6 +65,13 @@ public class UserController {
         userService.upsertProfile(id, profile);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/{id}/courses")
+    @Operation(summary = "List courses a student is enrolled in")
+    public List<EnrollmentResponse> courses(@PathVariable Long id) {
+        return enrollmentService.getByStudent(id).stream().map(EnrollmentResponse::from).toList();
+    }
+
+
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a user")

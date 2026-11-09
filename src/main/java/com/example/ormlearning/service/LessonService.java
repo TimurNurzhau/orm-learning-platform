@@ -35,6 +35,16 @@ public class LessonService {
     public List<Lesson> getByModule(Long moduleId) {
         return lessonRepository.findByModuleIdOrderByOrderIndexAsc(moduleId);
     }
+    @Transactional
+    public Lesson update(Long id, Lesson updated) {
+        Lesson existing = getById(id);
+        existing.setTitle(updated.getTitle());
+        existing.setContent(updated.getContent());
+        existing.setVideoUrl(updated.getVideoUrl());
+        existing.setOrderIndex(updated.getOrderIndex());
+        return existing;
+    }
+
 
     @Transactional
     public void delete(Long id) {

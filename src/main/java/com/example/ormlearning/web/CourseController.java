@@ -1,6 +1,7 @@
 package com.example.ormlearning.web;
 
 import com.example.ormlearning.dto.CourseCreateRequest;
+import com.example.ormlearning.dto.CourseDetailResponse;
 import com.example.ormlearning.dto.CourseResponse;
 import com.example.ormlearning.dto.EnrollmentResponse;
 import com.example.ormlearning.entity.Course;
@@ -30,13 +31,21 @@ public class CourseController {
     @Operation(summary = "Create a course")
     public ResponseEntity<CourseResponse> create(@Valid @RequestBody CourseCreateRequest request) {
         Course course = Course.builder()
-                .title(request.title())
-                .description(request.description())
-                .durationHours(request.durationHours())
-                .startDate(request.startDate())
+                .title(request.title()).description(request.description())
+                .durationHours(request.durationHours()).startDate(request.startDate())
                 .build();
-        Course saved = courseService.create(course, request.categoryId(), request.teacherId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(CourseResponse.from(saved));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CourseResponse.from(courseService.create(course, request.categoryId(), request.teacherId())));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a course")
+    public CourseResponse update(@PathVariable Long id, @Valid @RequestBody CourseCreateRequest request) {
+        Course patch = Course.builder()
+                .title(request.title()).description(request.description())
+                .durationHours(request.durationHours()).startDate(request.startDate())
+                .build();
+        return CourseResponse.from(courseService.update(id, patch, request.categoryId(), request.teacherId()));
     }
 
     @GetMapping
@@ -54,11 +63,24 @@ public class CourseController {
         return CourseResponse.from(courseService.getById(id));
     }
 
+    @GetMapping("/{id}/full")
+    @Operation(summary = "Get a course with modules (eager via @EntityGraph)")
+    public CourseDetailResponse getFull(@PathVariable Long id) {
+        return CourseDetailResponse.from(courseService.getWithModules(id));
+    }
+
     @PostMapping("/{courseId}/enroll/{studentId}")
     @Operation(summary = "Enroll a student in a course")
     public ResponseEntity<EnrollmentResponse> enroll(@PathVariable Long courseId, @PathVariable Long studentId) {
-        Enrollment enrollment = enrollmentService.enroll(studentId, courseId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(EnrollmentResponse.from(enrollment));
+        Enrollment e = enrollmentService.enroll(studentId, courseId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(EnrollmentResponse.from(e));
+    }
+
+    @DeleteMapping("/{courseId}/enroll/{studentId}")
+    @Operation(summary = "Unenroll a student from a course")
+    public ResponseEntity<Void> unenroll(@PathVariable Long courseId, @PathVariable Long studentId) {
+        enrollmentService.unenroll(studentId, courseId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{courseId}/students")

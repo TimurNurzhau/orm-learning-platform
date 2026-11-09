@@ -45,6 +45,14 @@ public class ModuleController {
     public List<ModuleResponse> listByCourse(@RequestParam Long courseId) {
         return moduleService.getByCourse(courseId).stream().map(ModuleResponse::from).toList();
     }
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a module")
+    public ModuleResponse update(@PathVariable Long id, @Valid @RequestBody ModuleRequest request) {
+        Module patch = Module.builder().title(request.title()).description(request.description())
+                .orderIndex(request.orderIndex()).build();
+        return ModuleResponse.from(moduleService.update(id, patch));
+    }
+
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a module")

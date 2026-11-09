@@ -46,6 +46,14 @@ public class LessonController {
     public List<LessonResponse> listByModule(@RequestParam Long moduleId) {
         return lessonService.getByModule(moduleId).stream().map(LessonResponse::from).toList();
     }
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a lesson")
+    public LessonResponse update(@PathVariable Long id, @Valid @RequestBody LessonRequest request) {
+        Lesson patch = Lesson.builder().title(request.title()).content(request.content())
+                .videoUrl(request.videoUrl()).orderIndex(request.orderIndex()).build();
+        return LessonResponse.from(lessonService.update(id, patch));
+    }
+
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a lesson")

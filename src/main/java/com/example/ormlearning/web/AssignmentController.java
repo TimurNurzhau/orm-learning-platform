@@ -46,6 +46,14 @@ public class AssignmentController {
     public List<AssignmentResponse> listByLesson(@RequestParam Long lessonId) {
         return assignmentService.getByLesson(lessonId).stream().map(AssignmentResponse::from).toList();
     }
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an assignment")
+    public AssignmentResponse update(@PathVariable Long id, @Valid @RequestBody AssignmentRequest request) {
+        Assignment patch = Assignment.builder().title(request.title()).description(request.description())
+                .dueDate(request.dueDate()).maxScore(request.maxScore()).build();
+        return AssignmentResponse.from(assignmentService.update(id, patch));
+    }
+
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an assignment")
