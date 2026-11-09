@@ -43,7 +43,7 @@ public class QuizService {
     }
 
     public Quiz getWithQuestions(Long id) {
-        return quizRepository.findWithQuestionsById(id)
+        return quizRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz", id));
     }
 

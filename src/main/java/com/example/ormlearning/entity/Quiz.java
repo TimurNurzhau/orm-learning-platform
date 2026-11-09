@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,6 @@ public class Quiz {
     @Column(name = "time_limit_minutes")
     private Integer timeLimitMinutes;
 
-    // inverse side of Module.quiz
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "module_id", nullable = false, unique = true,
             foreignKey = @ForeignKey(name = "fk_quizzes_module"))
@@ -43,6 +44,7 @@ public class Quiz {
     @OneToMany(mappedBy = "quiz", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")
+    @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     private List<Question> questions = new ArrayList<>();
 
