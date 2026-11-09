@@ -27,3 +27,4 @@ application-local.yml
 
 # Docker
 postgres_data/
+fix-all.ps1
