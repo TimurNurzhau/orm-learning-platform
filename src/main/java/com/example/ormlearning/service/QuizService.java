@@ -42,8 +42,12 @@ public class QuizService {
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz", id));
     }
 
+    /**
+     * Returns a quiz with questions and options eagerly loaded via @EntityGraph.
+     * Safe to call outside a transaction.
+     */
     public Quiz getWithQuestions(Long id) {
-        return quizRepository.findById(id)
+        return quizRepository.findWithQuestionsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz", id));
     }
 

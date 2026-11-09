@@ -63,7 +63,7 @@ class QuizServiceTest {
         Quiz quiz = sampleQuiz();
         when(userRepository.findById(1L)).thenReturn(Optional.of(
                 User.builder().id(1L).name("A").role(Role.STUDENT).build()));
-        when(quizRepository.findById(100L)).thenReturn(Optional.of(quiz));
+        when(quizRepository.findWithQuestionsById(100L)).thenReturn(Optional.of(quiz));
         when(quizSubmissionRepository.save(any(QuizSubmission.class))).thenAnswer(inv -> {
             QuizSubmission s = inv.getArgument(0);
             s.setId(500L);
@@ -83,7 +83,7 @@ class QuizServiceTest {
         Quiz quiz = sampleQuiz();
         when(userRepository.findById(1L)).thenReturn(Optional.of(
                 User.builder().id(1L).role(Role.STUDENT).build()));
-        when(quizRepository.findById(100L)).thenReturn(Optional.of(quiz));
+        when(quizRepository.findWithQuestionsById(100L)).thenReturn(Optional.of(quiz));
         when(quizSubmissionRepository.save(any(QuizSubmission.class))).thenAnswer(inv -> inv.getArgument(0));
 
         QuizSubmission result = quizService.takeQuiz(1L, 100L,
@@ -91,7 +91,7 @@ class QuizServiceTest {
 
         assertThat(result.getScore()).isEqualTo(1);
         assertThat(result.getMaxScore()).isEqualTo(2);
-        assertThat(result.isPassed()).isFalse(); // 50% < 60%
+        assertThat(result.isPassed()).isFalse();
     }
 
     @Test
@@ -111,4 +111,3 @@ class QuizServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 }
-

@@ -21,6 +21,8 @@ import com.example.ormlearning.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -67,5 +69,31 @@ class QuizServiceIT extends AbstractIntegrationTest {
         assertThat(result.getScore()).isEqualTo(1);
         assertThat(result.getMaxScore()).isEqualTo(1);
         assertThat(result.isPassed()).isTrue();
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void getWithQuestions_shouldEagerlyLoadQuestionsAndOptions() {
+        User student = userRepository.save(User.builder()
+                .name("QS2").email("qs2@example.com").role(Role.STUDENT).build());
+        Category cat = categoryRepository.save(Category.builder().name("QCat2").build());
+        Course course = courseRepository.save(Course.builder().title("QC2").category(cat).build());
+        Module module = moduleRepository.save(Module.builder()
+                .title("QM2").orderIndex(1).course(course).build());
+        Quiz quiz = quizRepository.save(Quiz.builder().title("Test Quiz 2").module(module).build());
+        Question q1 = questionRepository.save(Question.builder()
+                .text("2+2?").type(QuestionType.SINGLE_CHOICE)
+                .orderIndex(1).points(1).quiz(quiz).build());
+        answerOptionRepository.save(AnswerOption.builder()
+                .text("4").correct(true).orderIndex(1).question(q1).build());
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // No surrounding transaction — must NOT throw LazyInitializationException,
+        // because @EntityGraph eagerly loads questions and questions.options.
+        Quiz loaded = quizService.getWithQuestions(quiz.getId());
+        assertThat(loaded.getQuestions()).hasSize(1);
+        assertThat(loaded.getQuestions().get(0).getOptions()).hasSize(1);
     }
 }
