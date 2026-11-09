@@ -87,11 +87,14 @@ class QuizServiceIT extends AbstractIntegrationTest {
         answerOptionRepository.save(AnswerOption.builder()
                 .text("4").correct(true).orderIndex(1).question(q1).build());
 
-        entityManager.flush();
+        // No flush here: @Transactional(NOT_SUPPORTED) means there is no active
+        // transaction, and flush requires one. Repository save() already commits
+        // its own transaction. clear() is allowed without a transaction — it just
+        // detaches entities from the persistence context.
         entityManager.clear();
 
         // No surrounding transaction — must NOT throw LazyInitializationException,
-        // because @EntityGraph eagerly loads questions and questions.options.
+        // because @EntityGraph eagerly loads questions and (via SUBSELECT) their options.
         Quiz loaded = quizService.getWithQuestions(quiz.getId());
         assertThat(loaded.getQuestions()).hasSize(1);
         assertThat(loaded.getQuestions().get(0).getOptions()).hasSize(1);
