@@ -1,0 +1,14 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  docker:
+    compose:
+      enabled: true
+      lifecycle-management: start-only
+      file: docker-compose.yml
+
+logging:
+  level:
+    com.example.ormlearning: DEBUG
