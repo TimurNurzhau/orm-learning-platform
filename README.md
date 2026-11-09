@@ -167,9 +167,9 @@ GET /api/notifications/users/{userId}/unread — Непрочитанные ув
 PATCH /api/notifications/{id}/read — Отметить прочитанным
 POST /api/tags — Создать тег
 GET /api/tags — Список тегов
-POST /api/tags/courses/{courseId}/tags/{tagId} — Прикрепить тег к курсу
-DELETE /api/tags/courses/{courseId}/tags/{tagId} — Открепить тег
 DELETE /api/tags/{id} — Удалить тег
+POST /api/courses/{courseId}/tags/{tagId} — Прикрепить тег к курсу
+DELETE /api/courses/{courseId}/tags/{tagId} — Открепить тег
 
 Архитектура
 src/main/java/com/example/ormlearning/

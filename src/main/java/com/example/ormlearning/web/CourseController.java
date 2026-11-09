@@ -8,6 +8,7 @@ import com.example.ormlearning.entity.Course;
 import com.example.ormlearning.entity.Enrollment;
 import com.example.ormlearning.service.CourseService;
 import com.example.ormlearning.service.EnrollmentService;
+import com.example.ormlearning.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,6 +27,7 @@ public class CourseController {
 
     private final CourseService courseService;
     private final EnrollmentService enrollmentService;
+    private final TagService tagService;
 
     @PostMapping
     @Operation(summary = "Create a course")
@@ -87,6 +89,20 @@ public class CourseController {
     @Operation(summary = "List students enrolled in a course")
     public List<EnrollmentResponse> students(@PathVariable Long courseId) {
         return enrollmentService.getByCourse(courseId).stream().map(EnrollmentResponse::from).toList();
+    }
+
+    @PostMapping("/{courseId}/tags/{tagId}")
+    @Operation(summary = "Attach a tag to a course")
+    public ResponseEntity<Void> attachTag(@PathVariable Long courseId, @PathVariable Long tagId) {
+        tagService.attachToCourse(courseId, tagId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{courseId}/tags/{tagId}")
+    @Operation(summary = "Detach a tag from a course")
+    public ResponseEntity<Void> detachTag(@PathVariable Long courseId, @PathVariable Long tagId) {
+        tagService.detachFromCourse(courseId, tagId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

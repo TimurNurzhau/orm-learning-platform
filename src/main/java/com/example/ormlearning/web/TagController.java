@@ -34,20 +34,6 @@ public class TagController {
         return tagService.getAll().stream().map(TagResponse::from).toList();
     }
 
-    @PostMapping("/courses/{courseId}/tags/{tagId}")
-    @Operation(summary = "Attach a tag to a course")
-    public ResponseEntity<Void> attach(@PathVariable Long courseId, @PathVariable Long tagId) {
-        tagService.attachToCourse(courseId, tagId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/courses/{courseId}/tags/{tagId}")
-    @Operation(summary = "Detach a tag from a course")
-    public ResponseEntity<Void> detach(@PathVariable Long courseId, @PathVariable Long tagId) {
-        tagService.detachFromCourse(courseId, tagId);
-        return ResponseEntity.noContent().build();
-    }
-
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a tag")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

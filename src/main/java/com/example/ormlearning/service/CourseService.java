@@ -2,7 +2,6 @@ package com.example.ormlearning.service;
 
 import com.example.ormlearning.entity.Category;
 import com.example.ormlearning.entity.Course;
-import com.example.ormlearning.entity.Module;
 import com.example.ormlearning.entity.User;
 import com.example.ormlearning.exception.BusinessException;
 import com.example.ormlearning.exception.ResourceNotFoundException;
@@ -88,13 +87,5 @@ public class CourseService {
     public void delete(Long id) {
         Course course = getById(id);
         courseRepository.delete(course);
-    }
-
-    @Transactional
-    public Module addModule(Long courseId, Module module) {
-        Course course = getById(courseId);
-        module.setCourse(course);
-        course.getModules().add(module);
-        return module;
     }
 }
