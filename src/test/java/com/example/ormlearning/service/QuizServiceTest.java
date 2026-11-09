@@ -10,6 +10,7 @@ import com.example.ormlearning.entity.Role;
 import com.example.ormlearning.entity.User;
 import com.example.ormlearning.exception.ResourceNotFoundException;
 import com.example.ormlearning.repository.ModuleRepository;
+import com.example.ormlearning.repository.QuestionRepository;
 import com.example.ormlearning.repository.QuizRepository;
 import com.example.ormlearning.repository.QuizSubmissionRepository;
 import com.example.ormlearning.repository.UserRepository;
@@ -35,6 +36,7 @@ class QuizServiceTest {
     @Mock private QuizSubmissionRepository quizSubmissionRepository;
     @Mock private ModuleRepository moduleRepository;
     @Mock private UserRepository userRepository;
+    @Mock private QuestionRepository questionRepository;
 
     @InjectMocks private QuizService quizService;
 
@@ -64,6 +66,7 @@ class QuizServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(
                 User.builder().id(1L).name("A").role(Role.STUDENT).build()));
         when(quizRepository.findWithQuestionsById(100L)).thenReturn(Optional.of(quiz));
+        when(questionRepository.findWithOptionsByQuizId(100L)).thenReturn(quiz.getQuestions());
         when(quizSubmissionRepository.save(any(QuizSubmission.class))).thenAnswer(inv -> {
             QuizSubmission s = inv.getArgument(0);
             s.setId(500L);
@@ -84,6 +87,7 @@ class QuizServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(
                 User.builder().id(1L).role(Role.STUDENT).build()));
         when(quizRepository.findWithQuestionsById(100L)).thenReturn(Optional.of(quiz));
+        when(questionRepository.findWithOptionsByQuizId(100L)).thenReturn(quiz.getQuestions());
         when(quizSubmissionRepository.save(any(QuizSubmission.class))).thenAnswer(inv -> inv.getArgument(0));
 
         QuizSubmission result = quizService.takeQuiz(1L, 100L,

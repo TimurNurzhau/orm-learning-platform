@@ -8,6 +8,7 @@ import com.example.ormlearning.entity.QuizSubmission;
 import com.example.ormlearning.entity.User;
 import com.example.ormlearning.exception.ResourceNotFoundException;
 import com.example.ormlearning.repository.ModuleRepository;
+import com.example.ormlearning.repository.QuestionRepository;
 import com.example.ormlearning.repository.QuizRepository;
 import com.example.ormlearning.repository.QuizSubmissionRepository;
 import com.example.ormlearning.repository.UserRepository;
@@ -28,6 +29,7 @@ public class QuizService {
     private final QuizSubmissionRepository quizSubmissionRepository;
     private final ModuleRepository moduleRepository;
     private final UserRepository userRepository;
+    private final QuestionRepository questionRepository;
 
     @Transactional
     public Quiz create(Quiz quiz, Long moduleId) {
@@ -43,12 +45,22 @@ public class QuizService {
     }
 
     /**
-     * Returns a quiz with questions and options eagerly loaded via @EntityGraph.
+     * Returns a quiz with questions and their options fully initialized.
+     * Uses two queries: (1) Quiz + questions via EntityGraph,
+     * (2) options for those questions via second EntityGraph.
      * Safe to call outside a transaction.
      */
     public Quiz getWithQuestions(Long id) {
-        return quizRepository.findWithQuestionsById(id)
+        Quiz quiz = quizRepository.findWithQuestionsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz", id));
+
+        // Second query: initialize options for all questions of this quiz.
+        // The returned list replaces the lazy proxies in quiz.getQuestions()
+        // because Hibernate's persistence context stitches them together.
+        List<Question> questionsWithOptions = questionRepository.findWithOptionsByQuizId(id);
+        quiz.setQuestions(questionsWithOptions);
+
+        return quiz;
     }
 
     @Transactional
