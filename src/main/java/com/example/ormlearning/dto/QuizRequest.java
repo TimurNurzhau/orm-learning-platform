@@ -1,0 +1,12 @@
+package com.example.ormlearning.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
+public record QuizRequest(
+        @NotBlank @Size(max = 200) String title,
+        @Positive Integer timeLimitMinutes,
+        @NotNull Long moduleId
+) {}
