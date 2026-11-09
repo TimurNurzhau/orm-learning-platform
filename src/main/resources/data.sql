@@ -91,3 +91,22 @@ INSERT INTO notifications (id, title, message, is_read, created_at, user_id) VAL
                                                                                  (1, 'Welcome!', 'Welcome to the ORM learning platform', false, CURRENT_TIMESTAMP, 2),
                                                                                  (2, 'New assignment', 'You have a new assignment',     false, CURRENT_TIMESTAMP, 2)
     ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- Sync IDENTITY sequences after explicit-id inserts.
+-- Without this, the first JPA insert will fail with
+-- "duplicate key value violates unique constraint".
+-- ============================================================
+SELECT setval(pg_get_serial_sequence('users', 'id'),          (SELECT COALESCE(MAX(id), 1) FROM users));
+SELECT setval(pg_get_serial_sequence('profiles', 'id'),       (SELECT COALESCE(MAX(id), 1) FROM profiles));
+SELECT setval(pg_get_serial_sequence('categories', 'id'),     (SELECT COALESCE(MAX(id), 1) FROM categories));
+SELECT setval(pg_get_serial_sequence('courses', 'id'),        (SELECT COALESCE(MAX(id), 1) FROM courses));
+SELECT setval(pg_get_serial_sequence('modules', 'id'),        (SELECT COALESCE(MAX(id), 1) FROM modules));
+SELECT setval(pg_get_serial_sequence('lessons', 'id'),        (SELECT COALESCE(MAX(id), 1) FROM lessons));
+SELECT setval(pg_get_serial_sequence('assignments', 'id'),    (SELECT COALESCE(MAX(id), 1) FROM assignments));
+SELECT setval(pg_get_serial_sequence('quizzes', 'id'),        (SELECT COALESCE(MAX(id), 1) FROM quizzes));
+SELECT setval(pg_get_serial_sequence('questions', 'id'),      (SELECT COALESCE(MAX(id), 1) FROM questions));
+SELECT setval(pg_get_serial_sequence('answer_options', 'id'), (SELECT COALESCE(MAX(id), 1) FROM answer_options));
+SELECT setval(pg_get_serial_sequence('enrollments', 'id'),    (SELECT COALESCE(MAX(id), 1) FROM enrollments));
+SELECT setval(pg_get_serial_sequence('tags', 'id'),           (SELECT COALESCE(MAX(id), 1) FROM tags));
+SELECT setval(pg_get_serial_sequence('notifications', 'id'),  (SELECT COALESCE(MAX(id), 1) FROM notifications));
